@@ -202,17 +202,31 @@ class Node():
         return True
 
 class Link():
-    def __init__(self,name="", node1="1", node2="2", length=None, angleRad=None):
-        """
-        Basic definition of a link contains a name and names of node1 and node2
-        """
-        self.name=name
-        self.node1_Name=node1
-        self.node2_Name=node2
-        self.length=None
-        self.angleRad=None
-        self.graphic=RigidLink(0,0,1,1)
-        self.graphic.name=name
+    def __init__(self, name="", node1="1", node2="2", width=0.05, thickness=0.005, material="Steel"):
+        self.name = name
+        self.node1_Name = node1
+        self.node2_Name = node2
+        self.width = width
+        self.thickness = thickness
+        self.material = material
+        self.length = None
+        self.angleRad = None
+        self.graphic = RigidLink(0, 0, 1, 1)
+        self.graphic.name = name
+
+    def density(self):
+        return 7850 if self.material.lower() == "steel" else 2700
+
+    def computeWeight(self):
+        if self.length is None:
+            return 0.0
+        volume = self.length * self.width * self.thickness  # m³
+        return self.density() * volume * 9.81  # N
+
+    def getTooltip(self):
+        return f"Link: {self.name}\nMaterial: {self.material}\nWidth: {self.width:.3f} m\n" \
+               f"Thickness: {self.thickness:.3f} m\nWeight: {self.computeWeight():.2f} N"
+
 
     def __eq__(self, other):
         """
@@ -425,7 +439,7 @@ class TrussView():
             l.graphic = RigidLink(n1.position.x - offset.x, -(n1.position.y - offset.y), n2.position.x - offset.x,
                                   -(n2.position.y - offset.y), radius=3, pen=self.penLink, brush=self.brushLink, name="link name = "+l.name)
             # build a tool tip string
-            st = 'link: ' + l.name + '\n'
+            st = l.getTooltip()
             # assign tool tip string
             l.graphic.setToolTip(st)
             scene.addItem(l.graphic)
@@ -569,6 +583,17 @@ class TrussController():
 
     def drawTruss(self):
         self.view.buildScene(truss=self.truss)
+def getScene(self):
+    return self.view.scene
+
+def getItemAt(self, pos, transform):
+    return self.view.scene.itemAt(pos, transform)
+
+def getItemsAt(self, pos):
+    return self.view.scene.items(pos)
+
+if n.support in ('pin', 'roller'):
+    toolTip += f"\nSupport: {n.support}\nVertical Reaction: {n.reaction:.2f} N"
 
 #endregion
 
