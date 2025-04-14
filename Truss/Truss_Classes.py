@@ -21,41 +21,37 @@ class Position():
         :param y: float
         :param z: float
         """
-        #set default values
+        # set default values
         self.x = 0.0
         self.y = 0.0
         self.z = 0.0
-        #unpack position from a tuple if given
+        # unpack position from a tuple if given
         if pos is not None:
             self.x, self.y, self.z = pos
-        #override the x,y,z defaults if they are given as arguments
-        self.x=x if x is not None else self.x
-        self.y=y if y is not None else self.y
-        self.z=z if z is not None else self.z
+        # override the x,y,z defaults if they are given as arguments
+        self.x = x if x is not None else self.x
+        self.y = y if y is not None else self.y
+        self.z = z if z is not None else self.z
 
-    #region operator overloads $NEW$ 4/7/21
+    #region operator overloads
     def __eq__(self, other):
-        if self.x != other.x:
-            return False
-        if self.y != other.y:
-            return False
-        if self.z != other.z:
+        if self.x != other.x or self.y != other.y or self.z != other.z:
             return False
         return True
 
     # this is overloading the addition operator.  Allows me to add Position objects with simple math: c=a+b, where
     # a, b, and c are all position objects.
     def __add__(self, other):
-        return Position((self.x+other.x, self.y+other.y,self.z+other.z))
+        return Position((self.x + other.x, self.y + other.y, self.z + other.z))
 
-    #this overloads the iterative add operator
+    # this overloads the iterative add operator
     def __iadd__(self, other):
-        if other in (float, int):
+        if isinstance(other, (float, int)):
             self.x += other
             self.y += other
             self.z += other
             return self
-        if type(other) == Position:
+        if isinstance(other, Position):
             self.x += other.x
             self.y += other.y
             self.z += other.z
@@ -63,16 +59,16 @@ class Position():
 
     # this is overloading the subtraction operator.  Allows me to subtract Positions. (i.e., c=b-a)
     def __sub__(self, other):
-        return Position((self.x-other.x, self.y-other.y,self.z-other.z))
+        return Position((self.x - other.x, self.y - other.y, self.z - other.z))
 
-    #this overloads the iterative subtraction operator
+    # this overloads the iterative subtraction operator
     def __isub__(self, other):
-        if other in (float, int):
+        if isinstance(other, (float, int)):
             self.x -= other
             self.y -= other
             self.z -= other
             return self
-        if type(other) == Position:
+        if isinstance(other, Position):
             self.x -= other.x
             self.y -= other.y
             self.z -= other.z
@@ -80,18 +76,18 @@ class Position():
 
     # this is overloading the multiply operator.  Allows me to multiply a scalar or do a dot product (i.e., b=s*a or c=b*a)
     def __mul__(self, other):
-        if type(other) in (float, int):
-            return Position((self.x*other, self.y*other, self.z*other))
-        if type(other) is Position:
-            return Position((self.x*other.x, self.y*other.y, self.z*other.z))
+        if isinstance(other, (float, int)):
+            return Position((self.x * other, self.y * other, self.z * other))
+        if isinstance(other, Position):
+            return Position((self.x * other.x, self.y * other.y, self.z * other.z))
 
     # this is overloading the __rmul__ operator so that s*Pt works.
-    def __rmul__(self,other):
-        return self*other
+    def __rmul__(self, other):
+        return self * other
 
     # this is overloading the *= operator.  Same as a = Position((a.x*other, a.y*other, a.z*other))
     def __imul__(self, other):
-        if type(other) in (float, int):
+        if isinstance(other, (float, int)):
             self.x *= other
             self.y *= other
             self.z *= other
@@ -99,44 +95,40 @@ class Position():
 
     # this is overloading the division operator.  Allows me to divide by a scalar (i.e., b=a/s)
     def __truediv__(self, other):
-        if type(other) in (float, int):
-            return Position((self.x/other, self.y/other, self.z/other))
+        if isinstance(other, (float, int)):
+            return Position((self.x / other, self.y / other, self.z / other))
 
     # this is overloading the /= operator.  Same as a = Position((a.x/other, a.y/other, a.z/other))
     def __idiv__(self, other):
-        if type(other) in (float,int):
-            self.x/=other
-            self.y/=other
-            self.z/=other
+        if isinstance(other, (float, int)):
+            self.x /= other
+            self.y /= other
+            self.z /= other
             return self
-    #endregion
+    # endregion
 
-    def set(self,strXYZ=None, tupXYZ=None):
-        #set position by string or tuple
+    def set(self, strXYZ=None, tupXYZ=None):
+        # set position by string or tuple
         if strXYZ is not None:
-            cells=strXYZ.replace('(','').replace(')','').strip().split(',')
+            cells = strXYZ.replace('(', '').replace(')', '').strip().split(',')
             x, y, z = float(cells[0]), float(cells[1]), float(cells[2])
-            self.x=float(x)
-            self.y=float(y)
-            self.z=float(z)
+            self.x, self.y, self.z = float(x), float(y), float(z)
         elif tupXYZ is not None:
             x, y, z = tupXYZ #[0], strXYZ[1],strXYZ[2]
-            self.x=float(x)
-            self.y=float(y)
-            self.z=float(z)
+            self.x, self.y, self.z = float(x), float(y), float(z)
 
     def getTup(self): #return (x,y,z) as a tuple
         return (self.x, self.y, self.z)
 
     def getStr(self, nPlaces=3):
-        return '{}, {}, {}'.format(round(self.x, nPlaces), round(self.y,nPlaces), round(self.z, nPlaces))
+        return '{}, {}, {}'.format(round(self.x, nPlaces), round(self.y, nPlaces), round(self.z, nPlaces))
 
-    def mag(self):  # normal way to calculate magnitude of a vector
-        return (self.x**2+self.y**2+self.z**2)**0.5
+    def mag(self): # normal way to calculate magnitude of a vector
+        return (self.x ** 2 + self.y ** 2 + self.z ** 2) ** 0.5
 
-    def normalize(self):  # typical way to normalize to a unit vector
-        l=self.mag()
-        if l<=0.0:
+    def normalize(self): # typical way to normalize to a unit vector
+        l = self.mag()
+        if l <= 0.0:
             return
         self.__idiv__(l)
 
@@ -145,117 +137,117 @@ class Position():
         Gets angle of position relative to an origin (0,0) in the x-y plane
         :return: angle in x-y plane in radians
         """
-        l=self.mag()
-        if l<=0.0:
+        l = self.mag()
+        if l <= 0.0:
             return 0
-        if self.y>=0.0:
-            return math.acos(self.x/l)
-        return 2.0*math.pi-math.acos(self.x/l)
+        if self.y >= 0.0:
+            return math.acos(self.x / l)
+        return 2.0 * math.pi - math.acos(self.x / l)
 
     def getAngleDeg(self):
         """
         Gets angle of position relative to an origin (0,0) in the x-y plane
         :return: angle in x-y plane in degrees
         """
-        return 180.0/math.pi*self.getAngleRad()
+        return 180.0 / math.pi * self.getAngleRad()
+
 class Rectangle():
     def __init__(self, top=None, left=None, bottom=None, right=None):
-        self.top=0 if top is None else top
+        self.top = 0 if top is None else top
         self.left = 0 if left is None else left
-        self.bottom=0 if bottom is None else bottom
-        self.right=0 if right is None else right
+        self.bottom = 0 if bottom is None else bottom
+        self.right = 0 if right is None else right
 
     def height(self):
-        return self.top-self.bottom
+        return self.top - self.bottom
 
     def width(self):
-        return self.right-self.left
+        return self.right - self.left
 
     def centerY(self):
-        return self.bottom+self.height()/2.0
+        return self.bottom + self.height() / 2.0
 
     def centerX(self):
-        return self.left+self.width()/2.0
+        return self.left + self.width() / 2.0
 
 class Material():
     def __init__(self, uts=None, ys=None, modulus=None, staticFactor=None):
         self.uts = uts
         self.ys = ys
-        self.E=modulus
-        self.staticFactor=staticFactor
+        self.E = modulus
+        self.staticFactor = staticFactor
 
 class Node():
     def __init__(self, name=None, position=None):
         self.name = name
         self.position = position if position is not None else Position()
-        self.graphic = RigidPivotPoint(position.x, position.y, 10,30)
+        self.graphic = RigidPivotPoint(position.x, position.y, 10, 30)
+        self.support_type = "pin" if name.lower() == "left" else "roller"  # Left is grounded (pin), Right is roller
+        self.load = 0.0  # To store vertical load due to truss weight
 
     def __eq__(self, other):
         """
         This overloads the == operator such that I can compare two nodes to see if they are the same node.  This is
         useful when reading in nodes to make sure I don't get duplicate nodes
         """
-        if self.name != other.name:
-            return False
-        if self.position != other.position:
+        if self.name != other.name or self.position != other.position:
             return False
         return True
 
 class Link():
-    def __init__(self, name="", node1="1", node2="2", width=0.05, thickness=0.005, material="Steel"):
+    def __init__(self, name="", node1="1", node2="2", length=None, angleRad=None, width=None, thickness=None, material=None):
+        """
+        Basic definition of a link contains a name and names of node1 and node2
+        """
         self.name = name
         self.node1_Name = node1
         self.node2_Name = node2
+        self.length = length
+        self.angleRad = angleRad
         self.width = width
         self.thickness = thickness
-        self.material = material
-        self.length = None
-        self.angleRad = None
+        self.material = material  # "Steel" or "Aluminum"
+        self.weight = None  # To be calculated
         self.graphic = RigidLink(0, 0, 1, 1)
         self.graphic.name = name
-
-    def density(self):
-        return 7850 if self.material.lower() == "steel" else 2700
-
-    def computeWeight(self):
-        if self.length is None:
-            return 0.0
-        volume = self.length * self.width * self.thickness  # m³
-        return self.density() * volume * 9.81  # N
-
-    def getTooltip(self):
-        return f"Link: {self.name}\nMaterial: {self.material}\nWidth: {self.width:.3f} m\n" \
-               f"Thickness: {self.thickness:.3f} m\nWeight: {self.computeWeight():.2f} N"
-
 
     def __eq__(self, other):
         """
         This overloads the == operator for comparing equivalence of two links.
         """
-        if self.node1_Name != other.node1_Name: return False
-        if self.node2_Name != other.node2_Name: return False
-        if self.length != other.length: return False
-        if self.angleRad != other.angleRad: return False
+        if self.node1_Name != other.node1_Name or self.node2_Name != other.node2_Name:
+            return False
+        if self.length != other.length or self.angleRad != other.angleRad:
+            return False
         return True
 
     def set(self, node1=None, node2=None, length=None, angleRad=None):
-        self.node1_Name=node1
-        self.node2_Name=node2
-        self.length=length
-        self.angleRad=angleRad
+        self.node1_Name = node1
+        self.node2_Name = node2
+        self.length = length
+        self.angleRad = angleRad
+
+    def calculate_weight(self):
+        if self.length is None or self.width is None or self.thickness is None or self.material is None:
+            return
+        # Densities in lb/in^3
+        density = 0.283 if self.material.lower() == "steel" else 0.098  # Steel: 0.283 lb/in^3, Aluminum: 0.098 lb/in^3
+        # Weight = length * width * thickness * density
+        self.weight = self.length * self.width * self.thickness * density
 
 class TrussModel():
     def __init__(self):
-        self.title=None
-        self.links=[]
-        self.nodes=[]
-        self.material=Material()
+        self.title = None
+        self.links = []
+        self.nodes = []
+        self.material = Material()
         self.rct = Rectangle()
+        self.total_weight = 0.0  # To store total truss weight
 
     def getNode(self, name):
-       for n in self.nodes:
-           if n.name == name:
-               return n
+        for n in self.nodes:
+            if n.name == name:
+                return n
 
     def getCenterPt(self):
         """
@@ -263,20 +255,20 @@ class TrussModel():
         :return:
         """
         rct = Rectangle()
-        rct.left=self.nodes[0].position.x
-        rct.right=self.nodes[0].position.x
-        rct.top=self.nodes[0].position.y
-        rct.bottom=self.nodes[0].position.y
+        rct.left = self.nodes[0].position.x
+        rct.right = self.nodes[0].position.x
+        rct.top = self.nodes[0].position.y
+        rct.bottom = self.nodes[0].position.y
         for n in self.nodes:
-            if rct.left>n.position.x:
-                rct.left=n.position.x
-            if rct.right<n.position.x:
-                rct.right=n.position.x
-            if rct.top<n.position.y:
+            if rct.left > n.position.x:
+                rct.left = n.position.x
+            if rct.right < n.position.x:
+                rct.right = n.position.x
+            if rct.top < n.position.y:
                 rct.top = n.position.y
-            if rct.bottom>n.position.y:
-                rct.bottom=n.position.y
-        self.rct=rct
+            if rct.bottom > n.position.y:
+                rct.bottom = n.position.y
+        self.rct = rct
 
 class TrussView():
     def __init__(self):
@@ -311,22 +303,17 @@ class TrussView():
         self.penGridLines.setColor(qtg.QColor.fromHsv(197, 144, 228, alpha=50))
         # now make some brushes
         self.brushLink = qtg.QBrush(qtg.QColor.fromHsv(35, 255, 255, 64))
-        self.brushPivot = qtg.QBrush(qtg.QColor.fromRgb(215,215,215, alpha=128))
+        self.brushPivot = qtg.QBrush(qtg.QColor.fromRgb(215, 215, 215, alpha=128))
         # build a brush for filling with solid red
         self.brushFill = qtg.QBrush(qtc.Qt.darkRed)
         # a brush that makes a hatch pattern
         self.brushNode = qtg.QBrush(qtg.QColor.fromCmyk(0, 0, 255, 0, alpha=100))
         # a brush for the background of my grid
         self.brushGrid = qtg.QBrush(qtg.QColor.fromHsv(87, 98, 245, alpha=128))
-        # endregion
+        #end region
 
     def setDisplayWidgets(self, args):
-        self.te_Report = args[0]
-        self.le_LongLinkName = args[1]
-        self.le_LongLinkNode1 = args[2]
-        self.le_LongLinkNode2 = args[3]
-        self.le_LongLinkLength = args[4]
-        self.gv = args[5]
+        self.te_Report, self.le_LongLinkName, self.le_LongLinkNode1, self.le_LongLinkNode2, self.le_LongLinkLength, self.gv = args
         self.gv.setScene(self.scene)
 
     def displayReport(self, truss=None):
@@ -337,12 +324,14 @@ class TrussView():
         st += 'Yield Strength:  {:0.2f}\n'.format(truss.material.ys)
         st += 'Modulus of Elasticity:  {:0.2f}\n'.format(truss.material.E)
         st += '_____________Link Summary________________\n'
-        st += 'Link\t(1)\t(2)\tLength\tAngle\n'
+        st += 'Link\t(1)\t(2)\tLength\tAngle\tWidth\tWeight\n'
         longest = None
         for l in truss.links:
             if longest is None or l.length > longest.length:
                 longest = l
-            st += '{}\t{}\t{}\t{:0.2f}\t{:0.2f}\n'.format(l.name, l.node1_Name, l.node2_Name, l.length, l.angleRad)
+            st += '{}\t{}\t{}\t{:0.2f}\t{:0.2f}\t{:0.2f}\t{:0.2f}\n'.format(
+                l.name, l.node1_Name, l.node2_Name, l.length, l.angleRad, l.width, l.weight
+            )
         self.te_Report.setText(st)
         self.le_LongLinkName.setText(longest.name)
         self.le_LongLinkLength.setText("{:0.2f}".format(longest.length))
@@ -351,15 +340,15 @@ class TrussView():
 
     def buildScene(self, truss=None):
         """
-        I'm building the scene by centering a grid within the scene and then drawing the truss links and then nodes.
-        I will center the grid on the scene such that the 0,0 point in scene coordinates is at the middle of the grid.
-        I will place the truss in the scene such that the middle of all the nodes is at 0,0.
+        Builds the scene by centering a grid within the scene and then drawing the truss links and then nodes.
+        Builds center the grid on the scene such that the 0,0 point in scene coordinates is at the middle of the grid.
+        Places the truss in the scene such that the middle of all the nodes is at 0,0.
         This will mean that the left lower node will be offset from 0,0
         :param truss:
         :return:
         """
-        # Create a QRect() object to help with drawing the background grid.
-        truss.getCenterPt()  # this creates a rectangle.encloses the nodes
+        # Creates a QRect() object to help with drawing the background grid.
+        truss.getCenterPt() # this creates a rectangle.encloses the nodes
         rct = truss.rct
         rct.left -= 50
         rct.right += 50
@@ -416,14 +405,14 @@ class TrussView():
         # draw the horizontal grid lines
         y = bottom
         while y >= top:
-            lHor = qtw.QGraphicsLineItem(left, y, right, y)  # now flip y
+            lHor = qtw.QGraphicsLineItem(left, y, right, y)
             lHor.setPen(pen)
             self.scene.addItem(lHor)
             y -= Dy
 
     def drawLinks(self, truss=None):
         """
-        I copied most of this code from drawPipes in PipeNetwrok_classes
+        I copied most of this code from drawPipes in PipeNetwork_classes
         :param truss:
         :return:
         """
@@ -432,32 +421,44 @@ class TrussView():
         rct = truss.rct
         offset = Position(x=rct.centerX(), y=rct.centerY())
 
-        penLink = self.penLink
         for l in truss.links:
             n1 = truss.getNode(l.node1_Name)
             n2 = truss.getNode(l.node2_Name)
-            l.graphic = RigidLink(n1.position.x - offset.x, -(n1.position.y - offset.y), n2.position.x - offset.x,
-                                  -(n2.position.y - offset.y), radius=3, pen=self.penLink, brush=self.brushLink, name="link name = "+l.name)
+            l.graphic = RigidLink(
+                n1.position.x - offset.x, -(n1.position.y - offset.y),
+                n2.position.x - offset.x, -(n2.position.y - offset.y),
+                radius=3, pen=self.penLink, brush=self.brushLink, name="link name = " + l.name
+            )
             # build a tool tip string
-            st = l.getTooltip()
+            st = f'link: {l.name}\nMaterial: {l.material}\nWeight: {l.weight:.2f} lb'
             # assign tool tip string
             l.graphic.setToolTip(st)
             scene.addItem(l.graphic)
 
-    def drawNodes(self, truss=None, scene=None):
+    def drawNodes(self, truss=None):
         truss.getCenterPt()
         rct = truss.rct
         offset = Position(x=rct.centerX(), y=rct.centerY())
         for n in truss.nodes:
             x = n.position.x - offset.x
             y = (n.position.y - offset.y)
-            toolTip = "Node: " + n.name
-            if n.name.lower() == 'left' or n.name.lower() == 'right':
-                n.graphic = RigidPivotPoint(x, -y, 10, 18, brush=self.brushPivot, name=n.name)
-                self.scene.addItem(n.graphic)
+            support_label = "Grounded" if n.name.lower() == "left" else n.support_type.capitalize()
+            toolTip = f"Node: {n.name}\nSupport: {support_label}\nVertical Load: {n.load:.2f} lb"
+            if n.name.lower() in ['left', 'right']:
+                if n.name.lower() == "left":
+                    n.graphic = RigidPivotPoint(x, -y, 10, 18, brush=self.brushPivot, name=n.name)
+                    n.graphic.setToolTip(toolTip)
+                    self.scene.addItem(n.graphic)
+                elif n.support_type == "roller":
+                    radius = 5
+                    circle = qtw.QGraphicsEllipseItem(x - radius, -y - radius, 2 * radius, 2 * radius)
+                    circle.setBrush(self.brushPivot)
+                    circle.setPen(self.penNode)
+                    circle.setToolTip(toolTip)
+                    self.scene.addItem(circle)
+                    n.graphic = circle
             # self.drawACircle(centerX=x,centerY=y,Radius=8,pen=self.penNode,brush=self.brushNode, name=toolTip, tooltip=toolTip)
             self.drawALabel(x=x - 5, y=y + 15, str=n.name, pen=self.penLabel)
-        pass
 
     def drawALabel(self, x, y, str='', pen=None, brush=None, tip=None):
         scene = self.scene
@@ -478,27 +479,11 @@ class TrussView():
             bkg.setPen(outlinePen)
             scene.addItem(bkg)
         scene.addItem(lbl)
-        pass
-
-    def drawACircle(self, centerX, centerY, Radius, angle=0, brush=None, pen=None, name=None, tooltip=None):
-        scene = self.scene
-        # ellipse = qtw.QGraphicsEllipseItem(centerX - Radius, centerY - Radius, 2 * Radius, 2 * Radius)
-        ellipse = qtw.QGraphicsEllipseItem(centerX - Radius, -1.0 * (centerY + Radius), 2 * Radius,
-                                           2 * Radius)  # $NEW$ 4/7/21 flip y
-        if pen is not None:
-            ellipse.setPen(pen)
-        if brush is not None:
-            ellipse.setBrush(brush)
-        if name is not None:
-            ellipse.setData(0, name)
-        if tooltip is not None:
-            ellipse.setToolTip(tooltip)
-        scene.addItem(ellipse)
 
 class TrussController():
     def __init__(self):
-        self.truss=TrussModel()
-        self.view=TrussView()
+        self.truss = TrussModel()
+        self.view = TrussView()
 
     def ImportFromFile(self, data):
         """
@@ -514,40 +499,43 @@ class TrussController():
         Reading Links:
         The links should come after the nodes.  Each link has a name and two node names.  See method addLink
         """
-        self.truss=TrussModel()  # create a new truss object
-        for L in data:  #scan through all the lines
-            L=L.strip()
+        self.truss = TrussModel() # create a new truss object
+        for L in data: #scan through all the lines
+            L = L.strip()
             if L.find('#') == 0:
-                pass # L is a comment
-            else:
-                Cells=L.split(',')
-                if len(Cells)<=1:
-                    pass  # may contain a keyword but no comma delimited data
-                elif Cells[0].lower().find('material')>=0:
-                    sut=float(Cells[1].strip())
-                    sy=float(Cells[2].strip())
-                    E=float(Cells[3].strip())
-                    self.truss.material=Material(uts=sut, ys=sy, modulus=E)
-                elif Cells[0].lower().find('static')>=0:
-                    sf=float(Cells[1].strip())
-                    self.truss.material.staticFactor=sf
-                elif Cells[0].lower().find('node')>=0:
-                    name=Cells[1].strip()
-                    x=float(Cells[2].strip())
-                    y=float(Cells[3].strip())
-                    self.truss.nodes.append(Node(name=name, position=Position(x=x,y=y)))
-                elif Cells[0].lower().find('link') >= 0:
-                    name=Cells[1].strip()
-                    n1=Cells[2].strip()
-                    n2=Cells[3].strip()
-                    self.truss.links.append(Link(name=name, node1=n1, node2=n2))
+                continue
+            Cells = L.split(',')
+            if len(Cells) <= 1:
+                continue
+            elif Cells[0].lower().find('material') >= 0:
+                sut = float(Cells[1].strip())
+                sy = float(Cells[2].strip())
+                E = float(Cells[3].strip())
+                self.truss.material = Material(uts=sut, ys=sy, modulus=E)
+            elif Cells[0].lower().find('static') >= 0:
+                sf = float(Cells[1].strip())
+                self.truss.material.staticFactor = sf
+            elif Cells[0].lower().find('node') >= 0:
+                name = Cells[1].strip()
+                x = float(Cells[2].strip())
+                y = float(Cells[3].strip())
+                self.truss.nodes.append(Node(name=name, position=Position(x=x, y=y)))
+            elif Cells[0].lower().find('link') >= 0:
+                name = Cells[1].strip()
+                n1 = Cells[2].strip()
+                n2 = Cells[3].strip()
+                width = float(Cells[4].strip())
+                thickness = float(Cells[5].strip())
+                material = Cells[6].strip()
+                self.truss.links.append(Link(name=name, node1=n1, node2=n2, width=width, thickness=thickness, material=material))
         self.calcLinkVals()
+        self.calculateLoads()
         self.displayReport()
         self.drawTruss()
 
     def hasNode(self, name):
         for n in self.truss.nodes:
-            if n.name==name:
+            if n.name == name:
                 return True
         return False
 
@@ -564,16 +552,20 @@ class TrussController():
 
     def calcLinkVals(self):
         for l in self.truss.links:
-            n1=None
-            n2=None
-            if self.hasNode(l.node1_Name):
-                n1=self.getNode(l.node1_Name)
-            if self.hasNode(l.node2_Name):
-                n2=self.getNode(l.node2_Name)
+            n1 = self.getNode(l.node1_Name)
+            n2 = self.getNode(l.node2_Name)
             if n1 is not None and n2 is not None:
-                r=n2.position-n1.position
-                l.length=r.mag()
-                l.angleRad=r.getAngleRad()
+                r = n2.position - n1.position
+                l.length = r.mag()
+                l.angleRad = r.getAngleRad()
+                l.calculate_weight()
+
+    def calculateLoads(self):
+        self.truss.total_weight = sum(l.weight for l in self.truss.links if l.weight is not None)
+        vertical_load = self.truss.total_weight / 2
+        for n in self.truss.nodes:
+            if n.name.lower() in ['left', 'right']:
+                n.load = vertical_load
 
     def setDisplayWidgets(self, args):
         self.view.setDisplayWidgets(args)
@@ -583,17 +575,15 @@ class TrussController():
 
     def drawTruss(self):
         self.view.buildScene(truss=self.truss)
-def getScene(self):
-    return self.view.scene
 
-def getItemAt(self, pos, transform):
-    return self.view.scene.itemAt(pos, transform)
-
-def getItemsAt(self, pos):
-    return self.view.scene.items(pos)
-
-if n.support in ('pin', 'roller'):
-    toolTip += f"\nSupport: {n.support}\nVertical Reaction: {n.reaction:.2f} N"
-
+    def handleMouseMove(self, scenePos):
+        strScene = f"Mouse Position:  x = {round(scenePos.x(), 2)}, y = {round(-scenePos.y(), 2)}"
+        s = self.view.scene.itemAt(scenePos, qtg.QTransform())
+        if s is not None and s.data(0) is not None:
+            strScene += f' ({s.data(0)})'
+        items = self.view.scene.items(scenePos)
+        item_names = [item.name if hasattr(item, 'name') else None for item in items]
+        for i in item_names:
+            strScene += ', ' + (i if i is not None else 'none')
+        return strScene
 #endregion
-
